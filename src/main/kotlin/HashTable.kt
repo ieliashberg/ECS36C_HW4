@@ -20,7 +20,11 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
     // on each pair that is in the table and VALID
     operator fun iterator() : Iterator<Pair<K, V>> =
         sequence<Pair<K, V>> {
-            TODO()
+            for ( entry in storage) {
+                if (entry != null && !entry.deleted) {
+                    yield(Pair(entry.key, entry.value))
+                }
+            }
     }.iterator()
 
     override fun toString() : String = this.iterator().asSequence().joinToString(prefix="{", postfix="}",
@@ -30,29 +34,115 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
     // Internal resize function.  It should copy all the
     // valid entries but ignore the deleted entries.
     private fun resize(){
-        TODO()
+        var newStorage : Array<HashTableEntry<K, V>?> = arrayOfNulls(storage.size * 2)
+
+        privateSize = 0
+        for((key, value) in this) {
+            var newIndex = key.hashCode() % newStorage.size
+            while(newStorage[newIndex] != null) {
+                newIndex = (newIndex + 1) % newStorage.size
+                }
+            newStorage[newIndex] = HashTableEntry(key, value)
+            privateSize++
+        }
+        occupied = privateSize
+        storage = newStorage
     }
 
     operator fun contains(key: K): Boolean {
-        TODO()
+        return (get(key)!=null)
     }
 
     // Get returns null if the key doesn't exist
     operator fun get(key: K): V? {
-        TODO()
+        if (size == 0){
+            return null
+        }
+        var index = key.hashCode() % size
+        var numLookedAt = 0
+        while(numLookedAt < size) {
+            val at = storage[index]
+            if (at == null) {
+                return null
+            } else if ((!at.deleted) && (at.key == key)) {
+                return at.value;
+            }
+            numLookedAt++
+            index = (index+1) % size
+        }
+        return null;
     }
 
     // IF the key exists just update the corresponding data.
     // If the key doesn't exist, find a spot to insert it.
     // If you need to insert into a NEW entry, resize if
     // the occupancy (active & deleted entries) is >75%
+
+
+
     operator fun set(key: K, value: V) {
-        TODO()
+        if(!contains(key) ){
+            if(occupied.toDouble()/ storage.size > 0.75) {
+                resize()
+            }
+            var ndx = key.hashCode() % storage.size
+            if (ndx < 0) ndx += storage.size
+
+            var updated = false
+            while (!updated) {
+                val entry  = storage[ndx]
+                if (entry == null) {
+                    storage[ndx] = HashTableEntry(key, value, deleted = false)
+                    occupied++
+                    updated = true
+                } else if (entry.deleted) {
+                    storage[ndx]!!.value = value
+                    storage[ndx]!!.deleted = false
+                    updated = true
+                }
+                ndx = (ndx + 1) % storage.size
+            }
+            privateSize++
+
+}
+
+
+    /*        while(storage[ndx] != null && !storage[ndx]!!.deleted) {
+                ndx = (ndx + 1) % storage.size
+            }
+            storage[ndx] = HashTableEntry(key, value, deleted = false)
+            occupied++
+            privateSize++
+        } else {
+            var ndx = key.hashCode() % storage.size
+            var at = storage[ndx]
+            while(key != at!!.key) {
+                ndx = (ndx + 1) % storage.size
+                at = storage[ndx]
+            }
+            storage[ndx]!!.value = value
+        }
+
+     */
     }
+
+
 
     // If the key doesn't exist remove does nothing
     fun remove(key: K) {
-        TODO()
+        if(contains(key)) {
+            var index = key.hashCode() % size
+            var numLookedAt = 0
+            while(numLookedAt < size) {
+                val at = storage[index]
+                if ((at!!.key == key)) {
+                    at.deleted = true;
+                }
+                numLookedAt++
+                index = (index+1) % size
+            }
+            privateSize--
+        }
     }
 
 }

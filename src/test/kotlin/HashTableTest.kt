@@ -8,6 +8,14 @@ import kotlin.random.Random
 class HashTableTest {
 
     @Test
+    fun testGet() {
+        var table = HashTable<Int, String>()
+        for (i in 0 until 100) {
+            table[i] = "test"
+            assert(table[i] == "test")
+        }
+    }
+    @Test
     fun testLots() {
         for (x in 0..<100) {
             val h = HashTable<String, Int>()
