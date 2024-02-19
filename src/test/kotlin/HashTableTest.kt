@@ -32,6 +32,7 @@ class HashTableTest {
             for (s in strings) {
                 assert(s !in h)
                 h[s] = i
+                println(h[s])
                 assert(s in h)
                 assert(h[s] == i)
                 assert(h.size == i + 1)

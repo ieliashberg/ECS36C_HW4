@@ -38,10 +38,12 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
 
         privateSize = 0
         for((key, value) in this) {
-            var newIndex = key.hashCode() % newStorage.size
+            var newIndex = (key.hashCode() and 0x7FFFFFFF) % newStorage.size
+
             while(newStorage[newIndex] != null) {
                 newIndex = (newIndex + 1) % newStorage.size
-                }
+            }
+
             newStorage[newIndex] = HashTableEntry(key, value)
             privateSize++
         }
@@ -52,6 +54,7 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
     operator fun contains(key: K): Boolean {
         return (get(key)!=null)
     }
+
 
     // Get returns null if the key doesn't exist
     operator fun get(key: K): V? {
@@ -85,8 +88,7 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
             if(occupied.toDouble()/ storage.size > 0.75) {
                 resize()
             }
-            var ndx = key.hashCode() % storage.size
-            if (ndx < 0) ndx += storage.size
+            var ndx = (key.hashCode() and 0x7FFFFFFF) % storage.size
 
             var updated = false
             while (!updated) {
