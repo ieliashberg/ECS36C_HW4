@@ -121,24 +121,6 @@ class HashTable<K, V>(var initialCapacity: Int = 8) {
             storage[ndx]!!.value = value
         }
 
-
-    /*        while(storage[ndx] != null && !storage[ndx]!!.deleted) {
-                ndx = (ndx + 1) % storage.size
-            }
-            storage[ndx] = HashTableEntry(key, value, deleted = false)
-            occupied++
-            privateSize++
-        } else {
-            var ndx = key.hashCode() % storage.size
-            var at = storage[ndx]
-            while(key != at!!.key) {
-                ndx = (ndx + 1) % storage.size
-                at = storage[ndx]
-            }
-            storage[ndx]!!.value = value
-        }
-
-     */
     }
 
 
